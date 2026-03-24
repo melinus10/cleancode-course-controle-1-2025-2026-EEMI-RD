@@ -53,9 +53,17 @@ export function newRound(hasInit: boolean) {
 
 export function fight(playerHealth: number, enemyHealth: number, playerWeapon: any, hasInit: boolean, hasRound: boolean, hasFought: boolean): Array<number|boolean> {
     
-    if(hasInit){
-        if(hasRound){
-            if(!hasFought) {
+    if(!hasInit){
+        
+        throw new Error('Game not initialized');
+    }
+        if(!hasRound){ 
+            throw new Error('Round not initialized');
+        
+    }
+            if(hasFought) { 
+                throw new Error('Round already played');
+            }
     
                 let playerDamages: number = 0;
                 let enemyDamages: number = 0;
@@ -149,15 +157,8 @@ export function fight(playerHealth: number, enemyHealth: number, playerWeapon: a
                 }
             
                 return [playerHealth, enemyHealth, enemyWeapon, true, false, false];
-            }else{
-                throw new Error('Round already played');
             }
-        }else{
-            throw new Error('Round not initialized');
-        }
-    }else{
-        throw new Error('Game not initialized');
-    }
+        
 
 
-}
+
