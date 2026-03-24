@@ -8,3 +8,5 @@
 - if else imbriqués -> à remplacer par du failfast -> on vérifie les cas ou ça échoue sinon return succées ( pas de else ) (if (condition) alors échec)
 
 - du code répété pour le switch -> faire une sous fonction appart et l'appeler dans fight()
+
+- weaponsList initlaisé deux fois ? -> aucun interet 
