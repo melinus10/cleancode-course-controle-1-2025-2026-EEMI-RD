@@ -5,12 +5,16 @@ export abstract class Weapon {
     name: string;
     damage: number;
     hits : number;
-    description: string;
+    description : string;
     constructor(name: string, damage: number , hits : number) {
         this.name = name;
         this.damage = damage;
         this.hits = hits;
-        this.description="";
+        this.description = ""
+        const describe = weapon_desc.find(d => d.name === name);
+        if (describe) {
+            this.description = describe.description;       
+         }
     }
 
     getDamage(): number {
@@ -105,19 +109,15 @@ export function init() {
 }
 
 export function newRound(hasInit: boolean) {
-    if(hasInit) {
-        weaponList = weapons;
 
+    if(!hasInit) { throw new Error('Game not initialized'); }
         return {
             playerWeapon: weaponList[Math.floor(Math.random() * weaponList.length)],
             enemyWeapon: null,
             hasRound: true,
             hasFought: false
         }
-    } else {
-        throw new Error('Game not initialized');
-    }
-}
+    } 
 
 export function fight(playerHealth: number, enemyHealth: number, playerWeapon: any, hasInit: boolean, hasRound: boolean, hasFought: boolean): Array<number|boolean> {
     
@@ -135,11 +135,16 @@ export function fight(playerHealth: number, enemyHealth: number, playerWeapon: a
     
                 let playerDamages: number = 0;
                 let enemyDamages: number = 0;
-            
+                if(playerWeapon === null) {
+                    throw new Error('Invalid weapon');
+                }
                 playerDamages += playerWeapon.getDamage();
                         
                 let enemyWeapon = weaponList[Math.floor(Math.random() * weaponList.length)];
-            
+                
+                if(enemyWeapon === null) {
+                    throw new Error('Invalid weapon');
+                }
                 enemyDamages += enemyWeapon.getDamage();
 
                 if(playerDamages === enemyDamages) {
@@ -148,21 +153,18 @@ export function fight(playerHealth: number, enemyHealth: number, playerWeapon: a
                 
                 if(playerDamages < enemyDamages) {
                     
-                    playerHealth -= enemyDamages - playerDamages;
-                
+                    playerHealth -= enemyDamages - playerDamages ;                
                 }
-                    enemyHealth -= playerDamages - enemyDamages;
+                
+                if(playerDamages > enemyDamages) {
+                    enemyHealth -=  playerDamages - enemyDamages ;
+                }
            
-                // health cannot be negative
-                if(playerHealth <= 0) {
-                    playerHealth = 0;
-                }
+               playerHealth = checkHealthPositive(playerHealth);
             
-                // health cannot be negative
-                if(enemyHealth <= 0) {
-                    enemyHealth = 0;
-                }
+               enemyHealth = checkHealthPositive(enemyHealth);
                 
+
                 // check if the game is over and the player has won
                 if(enemyHealth === 0) {
                     return [playerHealth, enemyHealth, enemyWeapon, true, true, false];
@@ -179,4 +181,11 @@ export function fight(playerHealth: number, enemyHealth: number, playerWeapon: a
         
 
 
+
+function checkHealthPositive(health : number){
+    if(health <= 0) {
+        return 0;
+    }
+    return health;
+}
 
